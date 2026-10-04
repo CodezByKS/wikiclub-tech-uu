@@ -34,7 +34,7 @@ class PublicBlogSerializer(serializers.ModelSerializer):
 
     def get_author_title(self, obj):
         profile = getattr(obj.author, "profile", None)
-        return profile.get_member_title_display() if profile else ""
+        return (profile.role_label or profile.get_member_title_display()) if profile else ""
 
     def get_author_photo(self, obj):
         profile = getattr(obj.author, "profile", None)

@@ -23,17 +23,21 @@ class User(AbstractUser):
 
 class Profile(models.Model):
     class Title(models.TextChoices):
+        COORDINATOR = "COORDINATOR", "Project Coordinator"
+        MENTOR = "MENTOR", "Mentor"
+        ENVOY = "ENVOY", "Campus Envoy"
+        LEAD = "LEAD", "Team Lead"
         VOLUNTEER = "VOLUNTEER", "Volunteer"
-        CORE_TEAM = "CORE_TEAM", "Core Team Member"
-        LEAD = "LEAD", "Lead"
-        ALUMNI = "ALUMNI", "Alumni"
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     photo = models.ImageField(upload_to="profiles/", blank=True, null=True)
     member_title = models.CharField(max_length=20, choices=Title.choices, default=Title.VOLUNTEER)
+    role_label = models.CharField(max_length=100, blank=True)  # jaise "ML-Lead"
+    public_email = models.EmailField(blank=True)
     bio = models.TextField(blank=True)
     github = models.URLField(blank=True)
     linkedin = models.URLField(blank=True)
+    show_on_team = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
     display_order = models.IntegerField(default=0)
 

@@ -21,10 +21,10 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "member_title", "is_featured", "display_order")
-    list_filter = ("member_title", "is_featured")
-
-
+    list_display = ("user", "role_label", "member_title", "show_on_team", "is_featured", "display_order")
+    list_filter = ("member_title", "show_on_team", "is_featured")
+    search_fields = ("user__username", "user__first_name", "user__last_name", "role_label")
+    list_editable = ("show_on_team", "is_featured", "display_order")
 @admin.register(ActivityLog)
 class ActivityLogAdmin(admin.ModelAdmin):
     list_display = ("actor", "action", "target_type", "created_at")
