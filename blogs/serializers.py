@@ -16,20 +16,30 @@ def unique_slug(title):
 
 
 class PublicBlogSerializer(serializers.ModelSerializer):
-    """Website pe dikhne wala blog, author ke naam aur profile ke saath."""
-    author_name = serializers.SerializerMethodField()
+    """Website pe dikhne wala blog. Keys frontend ke hisaab se rakhi hain."""
+    image = serializers.SerializerMethodField()
+    date = serializers.DateTimeField(source="published_at", read_only=True)
+    author = serializers.SerializerMethodField()
     author_title = serializers.SerializerMethodField()
     author_photo = serializers.SerializerMethodField()
 
     class Meta:
         model = Blog
         fields = [
-            "id", "title", "slug", "content", "cover_image",
-            "is_featured", "published_at",
-            "author_name", "author_title", "author_photo",
+            "id", "title", "slug", "content", "excerpt", "tags", "is_featured",
+            "image", "date", "author", "author_title", "author_photo",
         ]
 
-    def get_author_name(self, obj):
+    def _absolute(self, url):
+        request = self.context.get("request")
+        return request.build_absolute_uri(url) if request else url
+
+    def get_image(self, obj):
+        if obj.cover_image:
+            return self._absolute(obj.cover_image.url)
+        return obj.cover_image_url or ""
+
+    def get_author(self, obj):
         return display_name(obj.author)
 
     def get_author_title(self, obj):
@@ -39,9 +49,7 @@ class PublicBlogSerializer(serializers.ModelSerializer):
     def get_author_photo(self, obj):
         profile = getattr(obj.author, "profile", None)
         if profile and profile.photo:
-            request = self.context.get("request")
-            url = profile.photo.url
-            return request.build_absolute_uri(url) if request else url
+            return self._absolute(profile.photo.url)
         return None
 
 
@@ -51,7 +59,7 @@ class MemberBlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = [
-            "id", "title", "slug", "content", "cover_image",
+            "id", "title", "slug", "excerpt", "tags", "content", "cover_image",
             "status", "rejection_reason", "is_featured",
             "published_at", "created_at", "updated_at",
         ]

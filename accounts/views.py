@@ -1,10 +1,17 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import generics, permissions
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Profile
-from .serializers import MyProfileSerializer, TeamMemberSerializer
+from .serializers import (
+    EmailOrUsernameTokenSerializer,
+    MyProfileSerializer,
+    TeamMemberSerializer,
+)
+
+
+class LoginView(TokenObtainPairView):
+    """Username ya email, dono se login."""
+    serializer_class = EmailOrUsernameTokenSerializer
 
 
 class MeView(generics.RetrieveUpdateAPIView):

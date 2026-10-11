@@ -1,10 +1,23 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Profile
+from .models import Profile, User
 
 
 def display_name(user):
     return user.get_full_name() or user.username
+
+
+class EmailOrUsernameTokenSerializer(TokenObtainPairSerializer):
+    """Login me username ki jagah email bhi chalega."""
+
+    def validate(self, attrs):
+        identifier = attrs.get("username", "")
+        if "@" in identifier:
+            user = User.objects.filter(email__iexact=identifier).first()
+            if user:
+                attrs["username"] = user.username
+        return super().validate(attrs)
 
 
 class MyProfileSerializer(serializers.ModelSerializer):
