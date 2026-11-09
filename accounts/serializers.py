@@ -25,13 +25,14 @@ class MyProfileSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source="user.email", read_only=True)
     role = serializers.CharField(source="user.role", read_only=True)
     name = serializers.SerializerMethodField()
+    can_upload_resources = serializers.BooleanField(source="user.can_upload_resources", read_only=True)
 
     class Meta:
         model = Profile
         fields = [
             "id", "username", "name", "email", "role",
             "photo", "member_title", "role_label", "public_email",
-            "bio", "github", "linkedin", "is_featured", "show_on_team",
+            "bio", "github", "linkedin", "is_featured", "show_on_team", "can_upload_resources",
         ]
         # member ye fields khud nahi badal sakta, sirf admin badlega
         read_only_fields = ["member_title", "role_label", "is_featured", "show_on_team"]
